@@ -1,0 +1,123 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block search %}
+<div class="container">
+  <div class="left-container">
+    <h2>Trang thi</h2>
+    <div class="course" name="couserid" value={{course.id}}>
+      <h4>{{course.course_name}}</h4>
+    </div> 
+    <form method="post" action="{% url 'submit_quiz' %}">
+      <input type="hidden" name="quiz_id" id="quizid" value="{{ quiz.id }}">
+      <h4>Bài thi của: </h4>
+      {% csrf_token %}
+      
+      {% for question in quiz_questions %}
+        <div class="question" data-question-id={{ question.id }}>
+          <p>{{ question.question_text }}</p>
+          {% for answer in question.answer_set.all %}       
+              <input type="radio" name="question_{{ question.id }}" value="{{ answer.id }}" {% if answer.id in selected_answers %}checked{% endif %}>
+              {{ answer.answer_text }}          
+            <br/>       
+          {% endfor %}      
+        </div>  
+      {% endfor %}
+      <div id="score-container">
+        <p>Điểm số: <span id="score">0</span></p>
+      </div>
+      <button type="button" id="save-button" value="save" class="btn btn-outline-secondary add-btn take-quiz" >Lưu</button>
+      <button type="button" id="submit-button" value="endtest" class="btn btn-outline-secondary add-btn take-quiz">Nộp bài</button>
+      </form>
+      <a  href="{% url 'result' quiz.id %}">Xem kết quả</a>
+  </div>
+  <div class="right-container">
+    <h4>Câu hỏi</h4>
+    <div class="question-list">
+        {% for question in quiz_questions %}
+            <div class="question-item" name="questionid" value="{{ question.id }}" data-question-id="{{ question.id }}">
+                {{ forloop.counter }}
+            </div>
+        {% endfor %}
+    </div>  
+  </div>
+</div>
+<script>
+  const selectedAnswers = {};
+  GetAllSelectedAnswers();
+
+  document.addEventListener("DOMContentLoaded", function() {
+      const saveButton = document.getElementById("save-button");
+       // Danh sách câu hỏi đã trả lời
+      //const selectedAnswers = selected_answers; 
+      // Lấy danh sách các phần tử câu hỏi bên phải
+      const questionItems = document.querySelectorAll(".question-item");
+  
+      // Lưu trạng thái ban đầu của các câu hỏi (chưa trả lời)
+      const questionStatus = new Array(questionItems.length).fill(false);
+  
+      // Sự kiện khi người thi chọn câu trả lời
+      document.addEventListener("change", function(event) {
+          const target = event.target;          
+          if (target.type === "radio" && target.name.startsWith("question_")) {
+              const questionId = target.name.split("_")[1]; // Lấy id của câu hỏi
+              const answerId = target.value; // Lấy id của câu trả lời đã chọn
+              // Lưu trạng thái câu hỏi đã được trả lời
+              questionStatus[questionId] = true;
+              updateQuestionStatus(questionId, true);
+  
+              // Lưu câu trả lời đã chọn vào selectedAnswers
+              selectedAnswers[questionId] = answerId;
+          }
+      }); 
+    
+  });
+
+ 
+  document.addEventListener("DOMContentLoaded", function() {
+    const questionItems = document.querySelectorAll(".question-item");
+    const questions = document.querySelectorAll(".question");
+
+    questionItems.forEach(item => {
+        item.addEventListener("click", function() {
+            const questionId = this.getAttribute("data-question-id");
+            const question = document.querySelector(`.question[data-question-id="${questionId}"]`);
+
+            if (question) {
+                question.scrollIntoView({ behavior: "smooth" });
+            }
+        });
+    });
+});
+
+
+  // Hàm cập nhật trạng thái của câu hỏi trong danh sách bên phải
+  function updateQuestionStatus(questionId, answered) {
+    const listItem = document.querySelector(`[value="${questionId}"]`);
+    if (listItem) {
+        if (answered) {
+            listItem.style.backgroundColor = "green"; // Câu đã trả lời
+        } else {
+            listItem.style.backgroundColor = "white"; // Câu chưa trả lời
+        }
+    }
+  }  
+
+  function GetAllSelectedAnswers()
+  {
+    document.querySelectorAll(".question").forEach(question => {
+      const questionId = question.getAttribute("data-question-id");
+    
+        // Tìm câu trả lời được chọn trong câu hỏi
+      const selectedAnswerInput = question.querySelector('input[type="radio"]:checked');
+        
+      if (selectedAnswerInput) {
+            // Nếu có câu trả lời được chọn, lưu nó vào selectedAnswers
+        selectedAnswers[questionId] = selectedAnswerInput.value;
+        updateQuestionStatus(questionId,true)
+      } 
+    });
+  }
+  </script>
+{% endblock search %}

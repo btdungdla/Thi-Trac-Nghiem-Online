@@ -1,0 +1,120 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+    <div class="onecol">
+        <h3 style="text-align:center;">QUẢN LÝ KỲ THI</h3>
+
+        <form method="post" id="add-exam-form">
+            {% csrf_token %}  
+            <table style='margin: auto'>
+                <tr >
+                    <td>Tên kỳ thi</td>
+                    <td>{{ form.exam_name }}</td>                    
+                </tr>
+                <tr>
+                    <td>Năm thi</td>
+                    <td>{{ form.year }}</td>                   
+                </tr>
+                <tr>
+                    <td>Trạng thái</td>
+                    <td>{{ form.status }}</td>
+                </tr> 
+                <tr>
+                    <td>Điểm xuất sắc</td>
+                    <td>{{ form.outstanding }}</td>
+                </tr>   
+                <tr>
+                    <td>Điểm giỏi</td>
+                    <td>{{ form.excellent }}</td>
+                </tr>  
+                <tr>
+                    <td>Điểm khá</td>
+                    <td>{{ form.good }}</td>
+                </tr>  
+                <tr>
+                    <td>Điểm trung bình</td>
+                    <td>{{ form.satisfactory }}</td>
+                </tr>              
+                <tr>
+                    <td><button type="submit" class ="btn">Thêm kỳ thi</button></td>
+                    <td><button type="button" class ="btn" id="update-exam-button" style="display: none;">Cập nhật</button></td>
+                </tr>
+            </table>    
+        </form>
+        <h4>Danh sách các kỳ thi</h4>
+        <table class="tbList">
+            
+            <tr>
+                <th>STT</th>
+                <th>Tên kỳ thi</th>
+                <th></th>
+            </tr>
+            {% for exam in exams %}
+            <tr>
+                <td>{{ forloop.counter}}</td>
+                <td> <input type="hidden" id="exam-id" name="exam-id" value="">
+                    <a href="javascript:void(0);" class="view-exam" data-exam-id="{{ exam.id }}">{{ exam.exam_name }}</a></td>
+                <td>
+                    <a href="{% url 'manage_course' exam_id=exam.id %}">Quản lý nhóm thi</a>
+                     - 
+                    <a href="{% url 'manage_category' exam_id=exam.id %}">Quản lý nhóm câu hỏi</a>
+                </td>                 
+            </tr>
+        {% endfor %}
+        </table>
+       
+    </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const viewExamLinks = document.querySelectorAll(".view-exam");
+        const form = document.getElementById("add-exam-form");
+        const updateButton = document.getElementById("update-exam-button");
+        const examIdInput = document.getElementById("exam-id"); 
+        
+        viewExamLinks.forEach(link => {
+            link.addEventListener("click", function () {
+                const examID = this.getAttribute("data-exam-id");
+                examIdInput.value = examID; 
+
+                // Sử dụng AJAX để tải thông tin khóa học và điền vào form
+                
+                fetch(`/get_exam_info/${examID}/`)  
+                    .then(response => response.json())
+                    .then(data => {
+                        form.exam_name.value = data.exam_name;
+                        form.year.value = data.year;
+                        form.status.checked = data.status;    
+                        form.outstanding.value = data.outstanding;
+                        form.excellent.value = data.excellent;
+                        form.good.value = data.good;
+                        form.satisfactory.value = data.satisfactory;                    
+                        updateButton.style.display = "block"; // Hiển thị nút Cập nhật
+                    })
+                    .catch(error => console.error(error));
+            });
+        });
+    
+        updateButton.addEventListener("click", function () {
+            // Gửi dữ liệu cập nhật lên máy chủ thông qua AJAX
+            // Đảm bảo bạn cập nhật URL phù hợp và xử lý cập nhật ở view
+            const formData = new FormData(form);
+            fetch(`/update_exam/${examIdInput.value}/`, { // Sử dụng courseIdInput.value
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Xử lý kết quả cập nhật (nếu cần)
+                // Ví dụ: Hiển thị thông báo cập nhật thành công
+                alert("Cập nhật thành công");
+
+                location.reload();
+            })
+            .catch(error => console.error(error));
+        });
+    });
+    </script>
+{% endblock search %}

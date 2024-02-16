@@ -1,0 +1,64 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<div class="left-container">
+    <h2>DANH SÁCH THÍ SINH TRONG NHÓM {{course.course_name}}</h2>
+    <div>      
+
+        <form method="get" action="{% url 'member_course' courseid=course.id %}">
+            <input class="form-control me-2" type="search" placeholder="Search by Name" aria-label="Search" name="search_name" id="searchNameInput" value="{{ search_name }}">
+            <input class="form-control me-2" type="search" placeholder="Search by Department" aria-label="Search" name="search_department" id="searchDepartmentInput" value="{{ search_department }}">
+            <input type="hidden" name="courseid" value= {{course.id}}>
+            <button class="btn btn-outline-success" type="submit" id="searchButton">Search</button>
+        </form>
+
+        <table class="Table-Result">
+            <tr>
+                <th>Nhóm thi</th>
+                <th>Phòng/Chi Cục Thuế</th>
+                <th>Tên</th>                
+                <th>Xóa</th>
+            </tr>
+            {% for student in students %}
+            <tr>
+                <td class="name">{{ course.course_name }}</td>
+                <td class="name">{{ student.department }}</td>
+                <td class="name">{{ student.name }}</td>
+                <td><a href ="#"  onclick="confirmDelete('{{ student.user.username }}', {{ course.id }})">xóa</a></td>
+            {% endfor %}
+        </table>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if students.has_previous %}
+                    <a href="?page=1&search_name={{ search_name }}&search_department={{ search_department }}">&laquo; first</a>
+                    <a href="?page={{ students.previous_page_number }}&search_name={{ search_name }}&search_department={{ search_department }}">previous</a>
+                {% endif %}
+
+                <span class="current-page">
+                    Page {{ students.number }} of {{ students.paginator.num_pages }}.
+                </span>
+
+                {% if students.has_next %}
+                    <a href="?page={{ students.next_page_number }}&search_name={{ search_name }}&search_department={{ search_department }}">next</a>
+                    <a href="?page={{ students.paginator.num_pages }}&search_name={{ search_name }}&search_department={{ search_department }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+<script>
+    function confirmDelete(username, courseId) {
+        var result = confirm("Bạn có chắc muốn xóa sinh viên này khỏi khóa học?");
+        if (result) {
+            // Nếu chọn Yes, thực hiện xóa
+            window.location.href = `/delete_student/${username}/${courseId}/`;
+        } else {
+            // Nếu chọn No, không làm gì
+        }
+    }
+</script>
+{% endblock search %}

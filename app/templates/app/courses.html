@@ -1,0 +1,49 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block search %}
+<div class="onecol">
+         
+        {% if request.user.is_staff %}
+        <div class="row_course_qt">
+            <h6 style="color:white;padding-left: 20px;padding-top: 40px" > Danh sách kỳ thi đang diễn ra: </b> </h6>
+                <form id="result_exam_post" action ="/Result_Course/" method='post'>
+                    {% csrf_token %}
+                    {%for exam in exams %}        
+                        <div class="row_course">        
+                            <div class="">
+                                <h6><strong>{{ exam.exam_name}}</strong></h6>
+                                <hr>
+                                <button type="submit" name="ExamID_Result" value={{exam.id}} data-course={{exam.id}} data-action = "add" class="btn btn-outline-secondary add-btn" onclick="goToResultExam({{ exam.id }})">Chi tiết kết quả</button>                
+                                <a class="btn" href="{% url 'result_dash_board' exam_id=exam.id %}">Thống kê</a>
+                            </div>
+                        </div>                                          
+                    {% endfor %}
+                </form>            
+        </div>
+        {% else %}
+        <div class="row_course_ts">
+            <form id="postForm" action ="/take-quiz/" method='post'>
+                <h6 style="color:white;padding-left: 20px;padding-top: 20px" > Xin chào thí sinh: <b> {{ request.user.student.name}} </b> </h6>
+                <h6 style="color:white;padding-left: 20px;padding-top: 20px" > Danh sách bài thi bạn cần tham dự: </b> </h6>
+                {% csrf_token %}
+                {%for course in courses %}        
+                    <div class="row_course">        
+                        <div class="">
+                            <h6><strong>{{ course.course_name}}</strong></h6>
+                            <hr>
+                            <button type="submit" name="CourseID" value={{course.id}} data-course={{course.id}} data-action = "add" class="btn btn-outline-secondary add-btn take-quiz">Vào thi</button>
+                            
+                        </div>
+                    </div>
+                
+                {% endfor %}
+            </form>
+        </div>
+        {% endif %}
+</div>
+
+<div id="my-container" ></div>
+
+{% endblock search %}

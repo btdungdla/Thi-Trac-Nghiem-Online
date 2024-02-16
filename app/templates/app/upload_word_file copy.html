@@ -1,0 +1,11 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block search %}
+    <form method="POST" action="" enctype="multipart/form-data" onsubmit="return validateForm();">
+        {% csrf_token %}
+        {{ form }}    
+        <button type="submit" class="btn btn-primary btn-lg">Tạo câu hỏi</button>
+    </form>
+{% endblock search %}

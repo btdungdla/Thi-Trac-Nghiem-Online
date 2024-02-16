@@ -1,0 +1,15 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block search %}
+<div class="onecol">
+    <h4 style="text-align:center">THÊM THÍ SINH VÀO {{ course.course_name | upper}}</h4>
+<form method="post" enctype="multipart/form-data" action="{% url 'add_user_to_course' course_id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Thêm vào nhóm</button><br/>
+    <a href="{% url 'download_sample_file' 'course_user.xlsx' %}">Tải file mẫu</a>
+</form>
+</div>
+{% endblock search %}

@@ -1,0 +1,15 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block search %}
+<div class="onecol">
+<h2 style="text-align:center">TẠO TÀI KHOẢN THI</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  Chọn file tài khoản cần tạo:<input type="file" name="excel_file" accept=".xlsx, .xls"><br/>
+  <button class="btn" type="submit">Tạo tài khoản</button>
+</form>
+<a href="{% url 'download_sample_file' tenmau='TaiKhoan.xlsx' %}">Tải file mẫu</a>
+</div>
+{% endblock search %}

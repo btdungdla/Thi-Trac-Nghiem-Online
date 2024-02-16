@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<form method="post">
+    {% csrf_token %}
+    {% for question, question_form, answer_forms in questions %}
+        {{ question_form.id }}
+        {{ question_form.question_text }}
+        
+        {% for answer_form in answer_forms %}
+            {{ answer_form.id }}
+            {{ answer_form.answer_text }}
+            <input type="radio" name="correct_answer_{{ question.pk }}" value="{{ answer_form.id }}" {% if answer_form.is_correct %}checked{% endif %}>
+            <!-- Thêm hidden input để chứa giá trị đáp án đúng -->
+            <input type="hidden" name="correct_answer_{{ question.pk }}" value="{{ answer_form.id }}" {% if answer_form.is_correct %}checked{% endif %}>
+        {% endfor %}
+    {% endfor %}
+    <input type="submit" value="Save">
+</form>
+{% endblock search %}

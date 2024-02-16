@@ -1,0 +1,60 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<div class="onecol">
+    <h2>KẾT QUẢ KỲ THI</h2>
+    <div class="exam" name="examid" value="{{ exam.id }}">
+        <h4>{{ exam.exam_name }}</h4>
+
+        <form method="get" action="{% url 'Result_Course' %}">
+            <br>
+            <h6>Tiêu chí tìm kiếm</h6>
+            <input class="form-control me-2" type="search" placeholder="Tên" aria-label="Search" name="search_name" id="searchNameInput" value="{{ search_name }}"><br/>
+            <input class="form-control me-2" type="search" placeholder="Phòng/CCT" aria-label="Search" name="search_department" id="searchDepartmentInput" value="{{ search_department }}"><br/>
+            <input class="form-control me-2" type="search" placeholder="Nhóm thi" aria-label="Search" name="search_group" id="searchGroupInput" value="{{ search_group }}"><br/>
+            <input type="hidden" name="examid" value="{{ exam.id }}">
+            <button class="btn btn-outline-success" type="submit" id="searchButton">Search</button>
+            <a class="btn" href="{% url 'export_result_to_excel' exam_id=exam.id %}">Xuất Excel</a>
+        </form>
+
+        <table class="Table-Result">
+            <tr>
+                <th>Phòng/Chi Cục Thuế</th>
+                <th>Tên</th>
+                <th>Nhóm thi</th>
+                <th>Số câu trả lời đúng</th>
+            </tr>
+            {% for quiz in quizs %}
+            <tr class="table-row table-active {% if quiz.Total_Correct_Answer >= exam.satisfactory %}good-score{% endif %}">
+                <td class="name">{{ quiz.user.department }}</td>
+                <!--td class="name"><a href="{% url 'result_page_with_user' quiz_id=quiz.id usr=quiz.user.id %}">{{ quiz.user.name }}</a></td-->
+                <td class="name">{{ quiz.user.name }}</td>
+                <td class="name">{{ quiz.course.course_name }}</td>
+                <td class="correct-answers">{{ quiz.Total_Correct_Answer }}/{{ quiz.numberofQuestion}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if quizs.has_previous %}
+                    <a href="?page=1&examid={{ exam.id }}&search_name={{ search_name }}&search_department={{ search_department }}">&laquo; first</a>
+                    <a href="?page={{ quizs.previous_page_number }}&examid={{ exam.id }}&search_name={{ search_name }}&search_department={{ search_department }}">previous</a>
+                {% endif %}
+
+                <span class="current-page">
+                    Page {{ quizs.number }} of {{ quizs.paginator.num_pages }}.
+                </span>
+
+                {% if quizs.has_next %}
+                    <a href="?page={{ quizs.next_page_number }}&examid={{ exam.id }}&search_name={{ search_name }}&search_department={{ search_department }}">next</a>
+                    <a href="?page={{ quizs.paginator.num_pages }}&examid={{ exam.id }}&search_name={{ search_name }}&search_department={{ search_department }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+{% endblock search %}

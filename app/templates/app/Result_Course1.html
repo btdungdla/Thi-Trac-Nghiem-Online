@@ -1,0 +1,31 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<div class="left-container">
+    <h2>KẾT QUẢ KỲ THI</h2>
+    <div class="course" name="couserid" value={{course.id}}>
+      <h4>{{course.course_name}}</h4>
+      <h5>{{len}}</h5>
+      <table class="Table-Result">
+        <tr>
+            <th>Tên</th>
+            <th>Số câu trả lời đúng</th>
+            <th>Điểm số</th>
+        </tr>
+        {% for quiz in quizs %}
+        <tr class="table-active {% if quiz.Total_Score > 50 %}good-score{% endif %}">
+            <td ><a  href="{% url 'result_page_with_user' quiz_id=quiz.id usr=quiz.user.id %}">{{ quiz.user.name }}</a></td>
+            <td>{{ quiz.Total_Correct_Answer }}</td>
+            <td>{{ quiz.Total_Score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    </div> 
+   
+  </div>
+
+{% endblock search %}

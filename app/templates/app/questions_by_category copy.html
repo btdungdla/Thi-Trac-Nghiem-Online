@@ -1,0 +1,34 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<div class="onecol">
+    <h2>Danh mục: {{ category.category_name }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {% for question_form, answer_forms in forms_data %}
+        <div>
+            <strong>Câu hỏi {{ forloop.counter }}:</strong>
+            {{ question_form.question_text }}
+            <ol type="A">
+                {% for answer_form in answer_forms %}
+                    <li>
+                        <label>
+                            <input type="radio" name="{{ question_form.prefix }}-correct_answer"
+                                   value="{{ answer_form.instance.id }}"
+                                   {% if answer_form.instance.is_correct %} checked {% endif %}>
+                          
+                        </label>
+                        {{ answer_form.answer_text }}
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    {% endfor %}
+    <button type="submit">Cập nhật</button>
+</form>
+</div>
+
+{% endblock search %}

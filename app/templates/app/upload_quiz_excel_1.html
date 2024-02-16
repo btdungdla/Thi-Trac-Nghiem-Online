@@ -1,0 +1,14 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block search %}
+<div class="onecol">
+    <h2>Upload support File</h2>
+    <form method="post" enctype="multipart/form-data" action="{% url 'support' %}">
+        {% csrf_token %}
+        <input type="file" name="excel_file" accept=".xlsx, .xls">
+        <button type="submit">Upload</button>
+    </form>
+</div>
+{% endblock search %}

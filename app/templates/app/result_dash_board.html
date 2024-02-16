@@ -1,0 +1,56 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="onecol">    
+    
+    <!-- Thêm canvas để vẽ biểu đồ -->
+    <canvas id="myChart" width="400" height="400"></canvas>
+    
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        var data = {
+            labels: ['Nhóm Xuất Sắc', 'Giỏi', 'Khá', 'Trung Bình', 'Yếu'],
+            datasets: [{
+                data: {{ result|safe }},  // Thay thế bằng dữ liệu thực tế từ Django
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        // Tạo và cấu hình biểu đồ tròn
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                title: {
+                    display: true,
+                    text: 'Phân phối kết quả bài thi',
+                    fontSize: 16
+                }
+            }
+        });
+    });
+</script>
+{% endblock search %}

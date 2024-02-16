@@ -1,0 +1,399 @@
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.onecol{
+  border: #555;
+  border-style: solid;
+  padding: 20px;
+  border-radius: 25px;
+  border-width: 0.5px;
+  background-color: #A1C9F1;
+  width: 100%;
+  margin: 30px 0px 30px 0px;
+}
+
+.left-container {
+  flex: 7.5; /* Chiếm 70% chiều rộng */
+  max-width: 70%;
+  /*overflow-y: auto; /* Hiển thị thanh cuộn nếu nội dung vượt quá */
+  border: #555;
+  border-style: solid;
+  padding: 20px;
+  border-radius: 25px;
+  border-width: 0.5px;
+  margin-top: 30px;
+  background-color: #A1C9F1;
+}
+
+.right-container {
+  width: 25%;
+  float: left;
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  border: #555;
+  border-style: solid;
+  padding: 20px;
+  border-radius: 25px;
+  border-width: 0.5px;
+  margin-top: 100px;
+  background-color: #A1C9F1;
+  color: black;
+  overflow-y: auto; /* Tạo thanh cuộn cho phần danh sách câu hỏi */
+}
+  
+  .left-container, .right-container {
+    padding: 10px;
+    border: 1px solid #ccc; /* Để làm rõ biên của các cột */
+  }
+
+.question-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.question-item {
+    border: 2px solid gray;
+    border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+}
+
+.right-container .question-list {
+  max-height: 300px; /* Điều chỉnh chiều cao tối đa của danh sách câu hỏi */
+  overflow-y: auto; /* Tạo thanh cuộn dọc khi cần thiết */
+}
+
+.radiocontainer.selected {
+  background-color: red;
+}
+.radiocontainer_selected {
+  background-color: red;
+}
+.radiocontainer_correct {
+  background-color: green;
+}
+
+.Table-Result {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.Table-Result th, .Table-Result td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Điều kiện CSS: Điểm số dưới 50 có nền đỏ */
+.Table-Result .table-active {
+  background-color: red;
+}
+
+/* Điều kiện CSS: Điểm số từ 50 trở lên có nền xanh dương nhạt */
+.Table-Result .table-active.good-score {
+  background-color: lightblue;
+}
+
+
+
+
+
+
+
+
+
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  background-image: url("/static/app/images/background1.png");
+  align-items: center;
+  background-color: #008000; /* Adjust the color according to your brand */
+  padding: 10px;
+}
+
+.logo img {
+  height: 90px; /* Adjust based on your actual logo size */
+}
+
+.search-bar input[type="search"] {
+  padding: 5px;
+}
+
+.location button {
+  background-color: #fff;
+  border: none;
+  padding: 5px 10px;
+}
+
+
+.welcome-banner {
+  background-color: #f0f0f0; /* Example background color */
+  text-align: center;
+  padding: 20px;
+}
+
+.welcome-banner .welcome-text h1 {
+  margin-bottom: 10px;
+}
+
+.welcome-banner .welcome-text p {
+  margin-bottom: 20px;
+}
+
+.welcome-banner .download-app {
+  background-color: #ffa500; /* Example button color */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* Add styles for deals and other sections */
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+/* You would need to expand upon this with your own classes and IDs from the HTML, as well as include media queries for responsiveness if needed. */
+
+
+
+nav {
+  background-color: #333; /* Màu nền của thanh điều hướng */
+}
+
+.nav-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center; /* Điều chỉnh này để các menu items canh giữa */
+  align-items: center;
+}
+
+.nav-list li {
+  position: relative;
+}
+
+.nav-list > li {
+  margin-right: 20px; /* Khoảng cách giữa các menu items */
+}
+
+.nav-list a {
+  text-decoration: none;
+  color: white; /* Màu của text trong menu */
+  padding: 10px 15px;
+  display: block;
+}
+
+.nav-list a:hover {
+  background-color: #555; /* Màu khi hover */
+}
+
+/* Style cho dropdown menu */
+.dropdown {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px; /* Chiều rộng của dropdown */
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown li {
+  float: none;
+}
+
+.dropdown li a {
+  color: black; /* Màu của text trong dropdown */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown li a:hover {
+  background-color: #ddd; /* Màu khi hover item trong dropdown */
+}
+
+/* Hiển thị dropdown menu khi hover */
+.nav-list li:hover .dropdown {
+  display: block;
+}
+
+/* Responsive adjustments might be necessary */
+@media (max-width: 768px) {
+  .nav-list {
+    flex-direction: column;
+  }
+  .nav-list > li {
+    margin-right: 0;
+  }
+}
+
+.nav-account {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center; /* Điều chỉnh này để các menu items canh giữa */
+  align-items: center;
+  color: white;
+}
+
+.onecol{
+  float: left;
+  width: 50%;
+  margin-left: 25%;
+  background-color: #A1C9F1;
+  padding-top: 20px;
+  padding-bottom: 200px;
+  border-radius: 25px;
+}
+
+.row_course{
+  float: left;
+  width: 100%;
+  border: #555;
+  border-style: solid;
+  padding: 20px;
+  border-radius: 25px;
+  border-width: 0.5px
+}
+
+.row_course_ts{
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.row_course_qt{
+  margin-top: 100px;
+  padding: 20px;
+}
+
+.btn {
+  background-color: white;
+  border: 1px solid #04AA6D;
+  color: black;
+  padding: 8px 15px; 
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 12px;
+}
+
+.btn:hover {
+  background-color: #04AA6D;
+}
+
+th, td {
+  padding: 5px;
+  text-align: left;
+}
+
+.tbList th,td{
+  border: 1px solid #04AA6D;
+  border-radius: 12px;
+  padding: 5px;
+  text-align: left;
+}
+
+
+.answer-option {
+  display: flex;
+  align-items: center; /* Căn chỉnh các items theo chiều dọc */
+  margin-bottom: 5px; /* Khoảng cách giữa các options */
+}
+
+.answer-option input[type="radio"] {
+  margin-right: 10px; /* Khoảng cách giữa radio button và text */
+}
+
+.answer-option span {
+  display: block; /* Đảm bảo text không wrap quanh radio button */
+}
+
+.answer-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px; /* Khoảng cách giữa các câu trả lời */
+}
+
+.answer-container input[type="radio"] {
+  margin-right: 10px; /* Khoảng cách giữa radio button và text đáp án */
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* Khoảng cách giữa các đáp án */
+}
+
+.form-check input[type="radio"] {
+  margin-right: 5px; /* Khoảng cách giữa radio button và text đáp án */
+}
+
+
+
+
+
+.question-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.question-label {
+  margin-bottom: 5px;
+}
+
+.question-text textarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 100px; /* Hoặc chiều cao bạn mong muốn */
+}
+
+ol {
+  padding-left: 0; /* Gỡ bỏ padding mặc định */
+}
+
+.answer-item {
+  display: flex;
+  align-items: center; /* Căn giữa các items theo chiều dọc */
+  margin-bottom: 5px;
+}
+
+.answer-label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.answer-prefix {
+  margin-right: 10px; /* Khoảng cách giữa nhãn và radio button */
+}
+
+.answer-text {
+  margin-left: 10px; /* Khoảng cách giữa radio button và text */
+}

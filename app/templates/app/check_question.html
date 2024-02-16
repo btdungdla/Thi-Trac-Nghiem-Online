@@ -1,0 +1,22 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<div class="left-container">
+    <h4>Câu hỏi không có đáp án:</h4>
+    <ul>
+        {% for question in questions_without_correct_answers %}
+            <li>{{ question.question_text }}({{question.category.category_name}} - <a href="{% url 'question_by_id' question.id %}">{{question.id}}</a>)</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Câu hỏi hơn 1 đáp án đúng:</h4>
+    <ul>
+        {% for question in questions_with_multiple_correct_answers %}
+            <li>{{ question.question_text }}({{question.category.category_name}} - <a href="{% url 'question_by_id' question.id %}">{{question.id}}</a>)</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock search %}

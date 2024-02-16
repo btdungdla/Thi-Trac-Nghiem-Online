@@ -1,0 +1,104 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+    <div class="onecol">
+        <h3 style="text-align:center">QUẢN LÝ {{ exam.exam_name}}</h3>
+        <h4 style="text-align:center">THÔNG TIN NHÓM THI</h4>
+
+        <form method="post" id="add-course-form">
+            {% csrf_token %}  
+            <table>
+                <tr >
+                    <td>Tên Nhóm thi</td>
+                    <td>{{ form.course_name }}</td>
+                </tr>
+                <tr>
+                    <td>Số lượng câu hỏi</td>
+                    <td>{{ form.numberofquestion }}</td>
+                </tr>
+                <tr>
+                    <td>Trạng thái</td>
+                    <td>{{ form.status }}</td>
+                </tr>
+                <tr>
+                    <td>Thời gian làm bài thi</td>
+                    <td>{{ form.timeofquiz }}</td>
+                </tr>
+                <tr>
+                    <td><button type="submit" class ="btn">Thêm nhóm thi</button></td>
+                    <td><button type="button" class ="btn" id="update-course-button" style="display: none;">Cập nhật</button></td>
+                </tr>
+            </table>    
+        </form>
+        <h4>Danh sách các nhóm thi</h4>
+        <table class="tbList">
+            
+            <tr>
+                <th>STT</th>
+                <th>Tên nhóm thi</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            {% for course in courses %}
+            <tr>
+                <td>{{ forloop.counter}}</td>
+                <td> <input type="hidden" id="course-id" name="course-id" value=""><a href="javascript:void(0);" class="view-course" data-course-id="{{ course.id }}">{{ course.course_name }}</a></td>
+                <td><a href="{% url 'add_course_category' course_id=course.id %}">Cấu hình câu hỏi cho bài thi</a></td>        
+                <td><a href="{% url 'add_user_to_course' course_id=course.id %}">Thêm thí sinh vào nhóm thi</a></td>         
+                <td><a href="{% url 'member_course' courseid=course.id %}">Danh sách thí sinh</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+       
+    </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const viewCourseLinks = document.querySelectorAll(".view-course");
+        const form = document.getElementById("add-course-form");
+        const updateButton = document.getElementById("update-course-button");
+        const courseIdInput = document.getElementById("course-id"); 
+        
+        viewCourseLinks.forEach(link => {
+            link.addEventListener("click", function () {
+                const courseId = this.getAttribute("data-course-id");
+                courseIdInput.value = courseId; // Đặt giá trị courseId
+                // Sử dụng AJAX để tải thông tin khóa học và điền vào form
+                
+                fetch(`/get_course_info/${courseId}/`)  
+                    .then(response => response.json())
+                    .then(data => {
+                        form.course_name.value = data.course_name;
+                        form.numberofquestion.value = data.numberofquestion;
+                        form.status.checked = data.status;
+                        form.timeofquiz.value = data.timeofquiz;
+                        updateButton.style.display = "block"; // Hiển thị nút Cập nhật
+                    })
+                    .catch(error => console.error(error));
+            });
+        });
+    
+        updateButton.addEventListener("click", function () {
+            // Gửi dữ liệu cập nhật lên máy chủ thông qua AJAX
+            // Đảm bảo bạn cập nhật URL phù hợp và xử lý cập nhật ở view
+            const formData = new FormData(form);
+            fetch(`/update_course/${courseIdInput.value}/`, { // Sử dụng courseIdInput.value
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Xử lý kết quả cập nhật (nếu cần)
+                // Ví dụ: Hiển thị thông báo cập nhật thành công
+                alert("Cập nhật thành công");
+
+                location.reload();
+            })
+            .catch(error => console.error(error));
+        });
+    });
+    </script>
+{% endblock search %}

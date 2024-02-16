@@ -1,0 +1,42 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+
+{% block search %}
+<div class="onecol">
+    <form method="POST" action="" enctype="multipart/form-data" id="upload-form">
+        {% csrf_token %}
+        {{ form }}    
+        <button type="submit" class="btn btn-primary btn-lg">Tạo câu hỏi</button>
+    </form>
+    <a class="btn" href="{% url 'manage_category' exam_id=exam_id %}">Quay lại</a>
+    <div id="success-message" style="display: none;">Tạo câu hỏi thành công</div>
+</div>
+
+<script>
+    // Sử dụng jQuery để thực hiện cuộc gọi AJAX
+    $(document).ready(function () {
+        $("#upload-form").submit(function (event) {
+            event.preventDefault();  // Ngăn chặn form được submit bình thường
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'CreateQuestion' categoryid=category_id %}",
+                data: new FormData(this),
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        $("#success-message").show();
+                        // Thực hiện các hành động khác nếu cần
+                        setTimeout(function () {
+                            window.location.replace("{% url 'manage_category' exam_id=exam_id %}");
+                        }, 2000);  // Chuyển hướng sau 2 giây
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock search %}           

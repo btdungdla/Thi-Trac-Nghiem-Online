@@ -1,0 +1,33 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+    <div class="onecol">
+        <h3 style="text-align:center;color:white">WEBSITE THI ONLINE</h3>
+        <br/>
+        <h5 style="text-align:center;color:white">THÔNG TIN THÍ SINH</h5>
+        <table style="margin: 0 auto;">
+            <tr>
+                <td>Họ và tên:</td>
+                <td>{{ student.name}}</td>
+            </tr>
+            <tr>
+                <td>Tài khoản đăng nhập:</td>
+                <td>{{ student.user.username}}</td>
+            </tr>
+            <tr>
+                <td>Đơn vị:</td>
+                <td>{{ student.department}}</td>
+            </tr>
+            <tr>
+                <td>Nhóm thi:</td>
+                <td>{{ course_name}}</td>
+            </tr>
+        </table>
+        
+       
+    </div>
+    
+{% endblock search %}

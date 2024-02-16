@@ -1,0 +1,175 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block search %}
+<div class="container">
+  <div class="left-container">   
+    <div class="course" name="couserid" value={{course.id}}>
+      <h4>{{course.course_name}}</h4>
+    </div> 
+    <form method="post" action="{% url 'submit_quiz' %}">
+      <input type="hidden" name="quiz_id" id="quizid" value="{{ quiz.id }}">
+      <h5>Bài thi của: {{request.user}}</h5>
+      <br/>
+      {% csrf_token %}
+      
+      {% for question in quiz_questions %}
+        <div class="question" data-question-id={{ question.id }}>
+          <p><b> Câu {{ forloop.counter }}: {{ question.question_text }} </b></p>
+          {% for answer in question.answer_set.all %}       
+              <input type="radio" onclick="updateQuestionStatus({{ question.id }})" name="question_{{ question.id }}" value="{{ answer.id }}" {% if answer.id in selected_answers %}checked{% endif %}>
+              {{ forloop.counter|int_to_char }}. {{ answer.answer_text }}          
+            <br/>       
+          {% endfor %}              
+          <br/>
+        </div>  
+      {% endfor %}      
+     
+      </form>
+      
+      {% comment %} <a  href="{% url 'result' quiz.id %}">Xem kết quả</a> {% endcomment %}
+  </div>
+  <div class="right-container">
+    <h4>Câu hỏi</h4>
+    <div class="question-list">
+        {% for question in quiz_questions %}
+            <div class="question-item" name="questionid" value="{{ question.id }}" onclick="scrollToQuestion({{ question.id }})">
+                {{ forloop.counter }}
+            </div>
+        {% endfor %}
+    </div>  
+    <div class="Quiz_Info">
+      <h6>Thời gian bắt đầu: {{ quiz.start_time|date:"H:i" }}</h6>
+      <h6>Thời gian kết thúc: {{ quiz.end_time|date:"H:i" }}</h6>      
+      <h6 id="countdown">Thời gian còn lại:</h6>
+      <button type="button" id="save-button" value="save" class="btn" >Lưu</button>
+      <button type="button" id="submit-button" value="endtest" class="btn">Nộp bài</button>
+      <h6 id="score1" style="display:none;">Bạn đã trả lời đúng: <h6 id="score"></h6></h6>
+  </div> 
+  </div>
+</div>
+<script>
+  const selectedAnswers = {};
+  GetAllSelectedAnswers();
+  var HetThoiGian = false;
+  var DaNopBai = false;
+  
+
+  function scrollToQuestion(questionId) {
+    // Tìm phần tử câu hỏi dựa trên data-question-id
+    const question = document.querySelector(`.question[data-question-id="${questionId}"]`);
+    
+    if (question) {
+        // Cuộn trang web đến câu hỏi
+        question.scrollIntoView({ behavior: "smooth" });
+    }
+}
+
+  
+
+  // Hàm cập nhật trạng thái của câu hỏi trong danh sách bên phải
+  function updateQuestionStatus(questionId) {
+    const listItem = document.querySelector(`.question-item[value="${questionId}"]`)
+    //const listItem = document.querySelector(`[value="${questionId}"]`);
+    if (listItem) {
+      if(IsSelectUnSure(questionId))
+        listItem.style.backgroundColor = "yellow"; // Câu đã trả lời      
+      else
+        listItem.style.backgroundColor = "green";
+    }
+  }  
+
+  function updateQuestionStatus_NotSure(questionId) {
+    const question = document.querySelector(`.unsure-checkbox[data-question-id="${questionId}"]:checked`)
+    if (question)
+    {
+      const listItem = document.querySelector(`.question-item[value="${questionId}"]`)
+      //const listItem = document.querySelector(`[value="${questionId}"]`);
+      if (IsSelectAnswer(questionId)) {
+        listItem.style.backgroundColor = "yellow"; // Câu đã trả lời       
+      }
+    }
+    else
+    {
+      const listItem = document.querySelector(`.question-item[value="${questionId}"]`)
+      //const listItem = document.querySelector(`[value="${questionId}"]`);
+      if (IsSelectAnswer(questionId)) {
+        listItem.style.backgroundColor = "green"; // Câu đã trả lời       
+      }
+      else
+        listItem.style.backgroundColor = "";   
+    }
+  }
+
+  function GetAllSelectedAnswers()
+  {
+    document.querySelectorAll(".question").forEach(question => {
+      const questionId = question.getAttribute("data-question-id");
+    
+        // Tìm câu trả lời được chọn trong câu hỏi
+      const selectedAnswerInput = question.querySelector('input[type="radio"]:checked');
+        
+      if (selectedAnswerInput) {
+            // Nếu có câu trả lời được chọn, lưu nó vào selectedAnswers
+        selectedAnswers[questionId] = selectedAnswerInput.value;
+        updateQuestionStatus(questionId)
+      } 
+    });
+  }
+
+  function IsSelectAnswer(questionid)
+  {
+    const question = document.querySelector(`.question[data-question-id="${questionid}"]`);
+    const selectedAnswerInput = question.querySelector('input[type="radio"]:checked');
+ 
+    if (selectedAnswerInput) {
+      return true; // Nếu có câu trả lời nào được chọn, trả về true
+    }
+    return false;
+  }
+
+  function IsSelectUnSure(questionid)
+  {
+    const selectUnSure = document.querySelector(`.unsure-checkbox[data-question-id="${questionid}"]:checked`)
+     
+    if (selectUnSure) {
+      return true; // Nếu có câu trả lời nào được chọn, trả về true
+    }
+    return false;
+  }
+
+  
+
+
+  function updateCountdown() {
+    var countdownElement = document.getElementById("countdown");
+    var startTime = new Date("{{  quiz.start_time|date:'Y-m-d H:i:s' }}"); 
+    var endTime = new Date("{{  quiz.end_time|date:'Y-m-d H:i:s' }}");  
+
+    var now = new Date();
+    var timeDifference = endTime - now;
+
+    if (timeDifference <= 0) {
+        countdownElement.textContent = "Hết thời gian";
+        HetThoiGian = true;
+        // Ở đây, bạn có thể thực hiện các hành động khi hết thời gian (ví dụ: tự động nộp bài).
+        if (DaNopBai==false)
+        {          
+          document.getElementById("submit-button").click();                             
+        }
+    } else {
+        var minutes = Math.floor((timeDifference / 1000) / 60);
+        var seconds = Math.floor((timeDifference / 1000) % 60);
+
+        var formattedTime = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+        countdownElement.textContent = "Thời gian còn lại: " + formattedTime;
+    }
+}
+
+setInterval(updateCountdown, 1000);  // Cập nhật mỗi giây
+updateCountdown();
+
+  </script>
+{% endblock search %}
