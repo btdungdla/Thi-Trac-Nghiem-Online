@@ -1,14 +1,14 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
+from app.Views.views_users import * 
+
 
 urlpatterns = [
     path('', views.home, name="home"),
-    path('register/', views.register, name="register"),
-    path('login/', views.loginPage, name="login"),
-    path('logout/', views.logoutPage, name="logout"),
-    path('cart/', views.cart, name="cart"),
-    path('checkout/', views.checkout, name="checkout"),
+    path('register/', register, name="register"),
+    path('login/', loginPage, name="login"),
+    path('logout/', logoutPage, name="logout"),    
     path('search/', views.search, name="search"),
     path('CreateQuestion/', views.upload_word_file, name="CreateQuestion"),
     path('CreateQuestion/<int:categoryid>/', views.upload_word_file, name="CreateQuestion"),

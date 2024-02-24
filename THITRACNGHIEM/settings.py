@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'WEBBANHANG.urls'
+ROOT_URLCONF = 'THITRACNGHIEM.urls'
 
 TEMPLATES = [
     {
@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'WEBBANHANG.wsgi.application'
+WSGI_APPLICATION = 'THITRACNGHIEM.wsgi.application'
 
 
 # Database

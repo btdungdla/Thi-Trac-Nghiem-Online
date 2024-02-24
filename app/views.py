@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 import openpyxl
 
-from WEBBANHANG import settings
+from THITRACNGHIEM import settings
 from .models import *
 import json
 from django.contrib.auth.forms import UserCreationForm
@@ -50,82 +50,10 @@ def home(request):
     context = {'products':products,'user_login':user_login,'user_not_login':user_not_login}
     return render(request,'app/home.html', context)
 
-def cart(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer,complete=False)
-        items = order.orderitem_set.all()
-    else:
-        items = []
-        order =[]
 
-    context = {'items':items,'order':order}
-    return render(request,'app/cart.html', context)
 
-def checkout(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer,complete=False)
-        items = order.orderitem_set.all()
-    else:
-        items = []
-        order =[]
-    context = {'items':items,'order':order}
-    return render(request,'app/checkout.html', context)
 
-def updateItem(request):  
-    data = json.loads(request.body)
-    productid= data['productId']
-    action= data['action']
-    customer = request.user.customer
-    product1 = Product.objects.get(id=productid)
-    order1, created = Order.objects.get_or_create(customer=customer,complete=False)
-    oritem, created = OrderItem.objects.get_or_create(order=order1,product=product1)
-    #oritem = OrderItem.objects.get(order=order1,product=product1)
-    
-    
-    
-    if action=="add":
-        oritem.quantity +=1        
-    else:
-        oritem.quantity -= 1
-    if oritem.quantity <= 0:
-        oritem.delete()
-    oritem.save()
-    return JsonResponse('add',safe=False)
 
-#region User
-def register(request):
-    frmDangKy = CreateUserForm()    
-    if request.method == 'POST':
-        frmDangKy = CreateUserForm(request.POST)
-        if frmDangKy.is_valid:
-            frmDangKy.save()
-            u = User.objects.get(username=request.POST.get('username'))
-            cust = Customer.objects.create(user=u,name= request.POST.get('username'),email= request.POST.get('email'))
-            return redirect("login")
-    context={'form':frmDangKy}
-    return render(request,'app/register.html',context)
-
-def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect ("home")
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request,username=username,password=password)
-        if user is not None:
-            login(request,user)
-            return redirect ("home")
-        else:
-            messages.info(request,"User or Password is not correct!")
-    context={}
-    return render(request,'app/login.html',context)
-
-def logoutPage(request):
-    logout(request)
-    return redirect("login")
-#endregion
 
 #region quiz
 
