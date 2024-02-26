@@ -53,4 +53,22 @@ def loginPage(request):
 def logoutPage(request):
     logout(request)
     return redirect("login")
+
+def change_password(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = CustomPasswordChangeForm(request.user, request.POST)
+            if form.is_valid():
+                user = form.save()
+                update_session_auth_hash(request, user)  # Để người dùng không bị logout sau khi đổi mật khẩu
+                messages.success(request, 'Mật khẩu đã được thay đổi thành công.')
+                return redirect('change_password')
+            else:
+                messages.error(request, 'Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.')
+        else:
+            form = CustomPasswordChangeForm(request.user)
+
+        return render(request, 'app/change_password.html', {'form': form})
+    else:            
+        return redirect("/login/")
 #endregion
