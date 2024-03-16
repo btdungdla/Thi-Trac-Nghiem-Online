@@ -14,83 +14,17 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['username','email','first_name','last_name','password1','password2']
 
-class Customer(models.Model):
-    user = models.OneToOneField(User,on_delete=models.SET_NULL,null=True,blank=False)
-    name = models.CharField(max_length=200,null=True)
-    email = models.CharField(max_length=200,null=True)
-
-    def __str__(self):
-        return self.name
 
 class Student(models.Model):
     user = models.OneToOneField(User,on_delete=models.SET_NULL,null=True,blank=False)
     name = models.CharField(max_length=200,null=True)
     email = models.CharField(max_length=200,null=True)    
     department = models.CharField(max_length=200,null=True)
+    organization = models.CharField(max_length=200,null=True)
     def __str__(self):
         return self.name
 
-class Product(models.Model):
-    name = models.CharField(max_length=200,null=True)
-    price = models.FloatField()
-    digital = models.BooleanField(default=False, null=True,blank=False)
-    image = models.ImageField(null=True,blank=True)
 
-    def __str__(self):
-        return self.name
-    
-    @property
-    def ImageURL(self):
-        try:
-            url = self.image.url
-        except:
-            url = ''
-        return url
-    
-class Order(models.Model):
-    customer = models.ForeignKey(Customer,on_delete=models.SET_NULL,blank=True,null=True)
-    date_order = models.DateTimeField(auto_now_add=True)
-    complete = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=200,null=True)
-   
-
-    def __str__(self):
-        return str(self.id)
-    
-    @property
-    def Total_Quantity(self):
-        order_items = self.orderitem_set.all()
-        total = sum([item.quantity for item in order_items])
-        return total
-    
-    @property
-    def Total_Bill(self):
-        order_items = self.orderitem_set.all()
-        total = sum([item.total_item for item in order_items])
-        return total
-    
-class OrderItem(models.Model):
-    product = models.ForeignKey(Product,on_delete=models.SET_NULL,blank=True,null=True)
-    order = models.ForeignKey(Order,on_delete=models.SET_NULL,blank=True,null=True)
-    quantity = models.IntegerField(default=1)
-    date_added = models.DateTimeField(auto_now_add=True)
-
-    @property
-    def total_item(self):
-        total = self.quantity * self.product.price
-        return total
-  
-class ShippingAddress(models.Model):
-    customer = models.ForeignKey(Customer,on_delete=models.SET_NULL,blank=True,null=True)
-    order = models.ForeignKey(Order,on_delete=models.SET_NULL,blank=True,null=True)
-    address = models.CharField(max_length=200)
-    city = models.CharField(max_length=200)
-    state = models.CharField(max_length=200)
-    mobile = models.CharField(max_length=200)
-    date_added = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.address
     
 class Exam(models.Model):
     exam_name = models.CharField(max_length=200)
@@ -116,6 +50,11 @@ class Category(models.Model):
     category_name = models.CharField(max_length=200)
     status = models.BooleanField(default=True)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE,default=None)
+    @property
+    def numberofQuestion(self):
+        # Sử dụng self.question_set.count() để tính số lượng câu hỏi trong danh mục
+        return self.question_set.count()
+    
     def __str__(self):
         return f"{self.category_name } - {self.id}"
 class Course_Category(models.Model):

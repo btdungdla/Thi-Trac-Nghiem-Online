@@ -26,15 +26,15 @@
     </div>
     {% else %}
     <div class="row_course_ts">
-        <form id="postForm" action="/take-quiz/" method='post'>
-            <h6 style="color:white;padding-left: 20px;padding-top: 20px"> Xin chào thí sinh: <b> {{
-                    request.user.student.name}} </b> </h6>
+        <form id="postForm" action="../take-quiz/" method='post'>
+            <h6 style="color:white;padding-left: 20px;padding-top: 20px"> Xin chào thí sinh: <b>
+                    {{ request.user.student.name }} </b> </h6>
             <h6 style="color:white;padding-left: 20px;padding-top: 20px"> Danh sách bài thi bạn cần tham dự: </b> </h6>
             {% csrf_token %}
             {%for course in courses %}
             <div class="row_course">
                 <div class="">
-                    <h6><strong>{{ course.course_name}}</strong></h6>
+                    <h6><strong>{{ course.exam.exam_name}} - {{ course.course_name}}</strong></h6>
                     <hr>
                     <button type="submit" name="CourseID" value={{course.id}} data-course={{course.id}}
                         data-action="add" class="btn btn-outline-secondary add-btn take-quiz">Vào thi</button>
@@ -51,3 +51,7 @@
 <div id="my-container"></div>
 
 {% endblock search %}
+
+{% block script %}
+<script src="{%static 'app/js/course.js'%}"></script>
+{% endblock script %}

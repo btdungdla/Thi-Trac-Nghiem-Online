@@ -22,37 +22,38 @@ from django.db.models import Q, Count
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
-def manage_exam(request):
+def manage_category(request, exam_id):
     if request.user.is_authenticated:
         if request.user.is_staff:
-            exams = Exam.objects.all()
+            exam = Exam.objects.get(id=exam_id)
+            try:
+                categorys = Category.objects.filter(exam__id = exam_id)
+            except ValueError:
+                categorys = None
             if request.method == 'POST':
-                form = ExamForm(request.POST)
+                form = CategoryForm(request.POST)
                 if form.is_valid():
+                    # Thêm giá trị của exam vào form trước khi lưu
+                    form.instance.exam = Exam.objects.get(id=exam_id)
                     form.save()
-                    # Redirect để tránh việc gửi lại dữ liệu khi người dùng làm mới trang
-                    return redirect('manage_exam')
+                    return redirect('manage_category', exam_id=exam_id)
             else:
-                form = ExamForm()
-                context = {'exams': exams, 'form': form}
-                return render(request, 'app/manage_exam.html', context)
+                form = CategoryForm()
+
+            context = {'categorys': categorys, 'form': form, 'exam': exam}
+            return render(request, 'app/manage_category.html', context)
         else:
             return HttpResponse("Bạn không có quyền thực hiện chức năng này")
     else:
         return redirect("/login/")
     
-def get_exam_info(request, exam_id):
+def get_category_info(request, category_id):
     if request.user.is_authenticated:
         if request.user.is_staff:
-            exam = Exam.objects.get(id=exam_id)
+            category = Category.objects.get(id=category_id)
             data = {
-                'exam_name': exam.exam_name,
-                'year': exam.year,
-                'status': exam.status,
-                'outstanding':exam.outstanding,
-                'excellent':exam.excellent,
-                'good':exam.good,
-                'satisfactory':exam.satisfactory
+                'category_name': category.category_name,
+                'status': category.status,
             }
             return JsonResponse(data)
         else:
@@ -60,13 +61,14 @@ def get_exam_info(request, exam_id):
     else:
         return redirect("/login/")
     
-def update_exam(request, exam_id):
+def update_category(request, category_id):
     if request.user.is_authenticated:
         if request.user.is_staff:
-            exam = Exam.objects.get(id=exam_id)
+            category = Category.objects.get(id=category_id)
             if request.method == 'POST':
-                form = ExamForm(request.POST, instance=exam)
+                form = CategoryForm(request.POST, instance=category)
                 if form.is_valid():
+                    form.instance.exam = category.exam
                     form.save()
                     data = {'success': True}
                 else:
@@ -76,3 +78,4 @@ def update_exam(request, exam_id):
             return HttpResponse("Bạn không có quyền thực hiện chức năng này")
     else:
         return redirect("/login/")
+    

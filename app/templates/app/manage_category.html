@@ -4,71 +4,76 @@
 
 
 {% block search %}
-    <div class="onecol">
-        <h3 style="text-align:center">QUẢN LÝ {{ exam.exam_name | upper}}</h3>
-        <h4 style="text-align:center">THÔNG TIN LOẠI CÂU HỎI</h4>
+<div class="onecol">
+    <h3 style="text-align:center">QUẢN LÝ {{ exam.exam_name | upper}}</h3>
+    <h4 style="text-align:center">THÔNG TIN LOẠI CÂU HỎI</h4>
 
-        <form method="post" id="add-category-form">
-            {% csrf_token %}  
-            <table>
-                <tr >
-                    <td>Tên loại câu hỏi</td>
-                    <td>{{ form.category_name }}</td>
-                </tr>                
-                <tr>
-                    <td>Trạng thái</td>
-                    <td>{{ form.status }}</td>
-                </tr>                
-                <tr>
-                    <td><button type="submit" class ="btn">Thêm loại câu hỏi</button></td>
-                    <td><button type="button" class ="btn" id="update-category-button" style="display: none;">Cập nhật</button></td>
-                </tr>
-            </table>    
-        </form>
-        <h4>Danh sách các nhóm thi</h4>
-        <table class="tbList">
-            
+    <form method="post" id="add-category-form">
+        {% csrf_token %}
+        <table>
             <tr>
-                <th>STT</th>
-                <th>Tên nhóm thi</th>
-                <th></th>
-                <th></th>
+                <td>Tên loại câu hỏi</td>
+                <td>{{ form.category_name }}</td>
             </tr>
-            {% for category in categorys %}
             <tr>
-                <td>{{ forloop.counter}}</td>
-                <td> <input type="hidden" id="category-id" name="category-id" value=""><a href="javascript:void(0);" class="view-category" data-course-id="{{ category.id }}">{{ category.category_name }}</a></td>
-                <td><a href="{% url 'CreateQuestion' categoryid=category.id %}">Tạo câu hỏi</a></td> 
-                <td><a href="{% url 'questions_by_category' category_id=category.id %}">Chi tiết câu hỏi</a></td>                
+                <td>Trạng thái</td>
+                <td>{{ form.status }}</td>
             </tr>
-        {% endfor %}
+            <tr>
+                <td><button type="submit" class="btn">Thêm loại câu hỏi</button></td>
+                <td><button type="button" class="btn" id="update-category-button" style="display: none;">Cập
+                        nhật</button></td>
+            </tr>
         </table>
-        <a class="btn" href="{% url 'manage_exam'%}">Quay lại</a>
-        <a class="btn" href="{% url 'check_question'%}">Kiểm tra câu hỏi</a>
-    </div>
+    </form>
+    <h4>Danh sách các nhóm câu hỏi</h4>
+    <table class="tbList">
+
+        <tr>
+            <th>STT</th>
+            <th>Tên nhóm câu hỏi</th>
+            <Th>Số lượng câu hỏi</Th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for category in categorys %}
+        <tr>
+            <td>{{ forloop.counter}}</td>
+            <td> <input type="hidden" id="category-id" name="category-id" value=""><a href="javascript:void(0);"
+                    class="view-category" data-category-id="{{ category.id }}">{{ category.category_name }}</a></td>
+            <td style="text-align: center;">{{ category.numberofQuestion }} </td>
+            <td><a href="{% url 'CreateQuestion' categoryid=category.id %}">Tạo câu hỏi</a>
+            </td>
+            <td><a href="{% url 'questions_by_category' category_id=category.id %}">Chi tiết câu hỏi</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a class="btn" href="{% url 'manage_exam'%}">Quay lại</a>
+    <a class="btn" href="{% url 'check_question'%}">Kiểm tra câu hỏi</a>
+</div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const viewCategoryLinks = document.querySelectorAll(".view-category");
         const form = document.getElementById("add-category-form");
         const updateButton = document.getElementById("update-category-button");
-        const categoryIdInput = document.getElementById("category-id"); 
-        
+        const categoryIdInput = document.getElementById("category-id");
+
         viewCategoryLinks.forEach(link => {
             link.addEventListener("click", function () {
                 const categoryId = this.getAttribute("data-category-id");
-                categoryIdInput.value = categoryId; 
-                
-                fetch(`/get_category_info/${categoryId}/`)  
+                categoryIdInput.value = categoryId;
+
+                fetch(`../get_category_info/${categoryId}/`)
                     .then(response => response.json())
                     .then(data => {
-                        form.category_name.value = data.course_name;
+                        form.category_name.value = data.category_name;
                         form.status.checked = data.status;
                         updateButton.style.display = "block"; // Hiển thị nút Cập nhật
                     })
                     .catch(error => console.error(error));
             });
         });
-    
+
         updateButton.addEventListener("click", function () {
             // Gửi dữ liệu cập nhật lên máy chủ thông qua AJAX
             // Đảm bảo bạn cập nhật URL phù hợp và xử lý cập nhật ở view
@@ -77,16 +82,16 @@
                 method: "POST",
                 body: formData,
             })
-            .then(response => response.json())
-            .then(data => {
-                // Xử lý kết quả cập nhật (nếu cần)
-                // Ví dụ: Hiển thị thông báo cập nhật thành công
-                alert("Cập nhật thành công");
+                .then(response => response.json())
+                .then(data => {
+                    // Xử lý kết quả cập nhật (nếu cần)
+                    // Ví dụ: Hiển thị thông báo cập nhật thành công
+                    alert("Cập nhật thành công");
 
-                location.reload();
-            })
-            .catch(error => console.error(error));
+                    location.reload();
+                })
+                .catch(error => console.error(error));
         });
     });
-    </script>
+</script>
 {% endblock search %}

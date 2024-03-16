@@ -4,45 +4,50 @@
 }
 
 .left-container {
-  flex: 7; /* Chiếm 70% chiều rộng */
+  flex: 7;
+  /* Chiếm 70% chiều rộng */
   max-width: 70%;
   /*overflow-y: auto; /* Hiển thị thanh cuộn nếu nội dung vượt quá */
 }
 
 .right-container {
-    width: 25%;
-    float: left;
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    /*height: 200px;
+  width: 25%;
+  float: left;
+  position: fixed;
+  /* top: 100px; */
+  right: 20px;
+  /*height: 200px;
     /*overflow-y: auto;*/
 }
-  
-  .left-container, .right-container {
-    padding: 10px;
-    border: 1px solid #ccc; /* Để làm rõ biên của các cột */
-  }
+
+.left-container,
+.right-container {
+  padding: 10px;
+  border: 1px solid #ccc;
+  /* Để làm rõ biên của các cột */
+}
 
 .question-list {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
 }
 
 .question-item {
-    border: 2px solid gray;
-    border-radius: 5px;
-    padding: 5px;
-    text-align: center;
+  border: 2px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+  text-align: center;
 }
 
 .radiocontainer.selected {
   background-color: red;
 }
+
 .radiocontainer_selected {
   background-color: red;
 }
+
 .radiocontainer_correct {
   background-color: green;
 }
@@ -52,7 +57,8 @@
   border-collapse: collapse;
 }
 
-.Table-Result th, .Table-Result td {
+.Table-Result th,
+.Table-Result td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;

@@ -23,17 +23,17 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
 #region User
-def register(request):
-    frmDangKy = CreateUserForm()    
-    if request.method == 'POST':
-        frmDangKy = CreateUserForm(request.POST)
-        if frmDangKy.is_valid:
-            frmDangKy.save()
-            u = User.objects.get(username=request.POST.get('username'))
-            cust = Customer.objects.create(user=u,name= request.POST.get('username'),email= request.POST.get('email'))
-            return redirect("login")
-    context={'form':frmDangKy}
-    return render(request,'app/register.html',context)
+# def register(request):
+#     frmDangKy = CreateUserForm()    
+#     if request.method == 'POST':
+#         frmDangKy = CreateUserForm(request.POST)
+#         if frmDangKy.is_valid:
+#             frmDangKy.save()
+#             u = User.objects.get(username=request.POST.get('username'))
+#             cust = Customer.objects.create(user=u,name= request.POST.get('username'),email= request.POST.get('email'))
+#             return redirect("login")
+#     context={'form':frmDangKy}
+#     return render(request,'app/register.html',context)
 
 def loginPage(request):
     if request.user.is_authenticated:
@@ -70,5 +70,48 @@ def change_password(request):
 
         return render(request, 'app/change_password.html', {'form': form})
     else:            
+        return redirect("/login/")
+    
+def create_user(request):
+     if request.user.is_authenticated:
+        if request.user.is_staff:
+            if request.method == 'POST' and request.FILES['excel_file']:
+                excel_file = request.FILES['excel_file']
+
+                try:
+                    df = pd.read_excel(excel_file)
+
+                    for _, row in df.iterrows():
+                        # Tạo người dùng
+                        sUser = row['username']
+                        spass= row['password']
+                        user = User.objects.create_user(username=row['username'], password=row['password'])
+
+                        # Tạo sinh viên
+                        sname = row['Họ và tên']
+                        sPhong =row['Phòng/Đội']
+                        sCQT = row['Đơn vị']
+                        student = Student.objects.create(user=user, name=row['Họ và tên'], email=row['email'], department = row['Phòng/Đội'], organization = row['Đơn vị'])
+
+                    messages.success(request, 'Đã tạo người dùng và sinh viên thành công từ file Excel.')
+                    return HttpResponse('Đã tạo người dùng thành công')  # Chuyển hướng đến trang thành công
+
+                except Exception as e:
+                    messages.error(request, f'Có lỗi xảy ra: {str(e)}')
+                    return HttpResponse('Lỗi')  # Chuyển hướng đến trang lỗi
+
+            return render(request, 'app/process_excel.html')
+
+def info(request):
+    if request.user.is_authenticated:
+        student = Student.objects.get(user=request.user)
+        course = Course.objects.get(course_student__Course__status = True, course_student__user = student)
+        course_name = course.course_name
+        context ={
+            'student':student,
+            'course_name':course_name
+        }
+        return render(request,"app/info.html",context)
+    else:
         return redirect("/login/")
 #endregion

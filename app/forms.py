@@ -1,6 +1,7 @@
 from django import forms
 from .models import *
 from django.contrib.auth.forms import PasswordChangeForm
+
 class UploadWordFileForm(forms.Form):
     word_file = forms.FileField()     
     category = forms.ModelChoiceField(
