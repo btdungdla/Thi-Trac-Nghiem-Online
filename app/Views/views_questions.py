@@ -64,4 +64,4 @@ def upload_word_file(request, categoryid):
     else:
         form = UploadQuestionWordFileForm()
    
-    return render(request, 'app/upload_word_file.html', {'form': form,'exam_id':cat.exam.id,'category_id':cat.id})
+    return render(request, 'app/upload_word_file.html', {'form': form,'exam_id':cat.exam.id,'category_id':cat.id,'category_name':cat.category_name})

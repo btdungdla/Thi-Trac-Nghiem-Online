@@ -4,9 +4,10 @@
 
 {% block search %}
 <div class="onecol">
+    <h4>Upload câu hỏi cho nhóm: {{category_name}}</h4>
     <form method="POST" action="" enctype="multipart/form-data" id="upload-form">
         {% csrf_token %}
-        {{ form }}    
+        {{ form }}
         <button type="submit" class="btn btn-primary btn-lg">Tạo câu hỏi</button>
     </form>
     <a class="btn" href="{% url 'manage_category' exam_id=exam_id %}">Quay lại</a>
@@ -39,4 +40,4 @@
         });
     });
 </script>
-{% endblock search %}           
+{% endblock search %}

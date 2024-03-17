@@ -22,6 +22,8 @@ from django.db.models import Q, Count
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from app.Views.views_Utils import *
+from django.forms import modelformset_factory
+from django.forms import formset_factory
 
 
 def manage_questions(request, category_id):
@@ -71,7 +73,6 @@ def questions_by_category(request, category_id):
                     answer_instance = answer_form.save(commit=False)
                     answer_instance.is_correct = str(answer_instance.id) == correct_answer_id
                     answer_instance.save()
-
         return redirect('questions_by_category', category_id=category_id)
     else:
         for question in questions:
@@ -85,22 +86,32 @@ def questions_by_category(request, category_id):
 def question_by_id(request, question_id):
     question = Question.objects.get(id=question_id)
     forms_data = []
+    bAddAnswer = False
 
     if request.method == 'POST':
         question_form = QuestionForm(request.POST, instance=question, prefix=f'question_{question.pk}')
         answer_forms = [AnswerForm(request.POST, instance=answer, prefix=f'answer_{answer.pk}') for answer in question.answer_set.all()]
-        if question_form.is_valid() and all(answer_form.is_valid() for answer_form in answer_forms):
-            question_instance = question_form.save()
+        while len(answer_forms) < 4:
+            answer_forms.append(AnswerForm(request.POST, prefix=f'answer_{len(answer_forms) + 1}'))
+            bAddAnswer = True
+        if (question_form.is_valid() or bAddAnswer)   and all(answer_form.is_valid() for answer_form in answer_forms):
+            question_instance = question_form.instance
             correct_answer_id = request.POST.get(f'{question_form.prefix}-correct_answer')
             for answer_form in answer_forms:
                 answer_instance = answer_form.save(commit=False)
+                # Kiểm tra xem answer_instance có tồn tại trong cơ sở dữ liệu chưa
+                if not answer_instance.id:
+                    answer_instance.question = question_instance  # Gán câu hỏi cho đáp án mới
                 answer_instance.is_correct = str(answer_instance.id) == correct_answer_id
-                answer_instance.save()
-
+                answer_instance.save()            
+            question_instance.save()
         return redirect('question_by_id', question_id=question_id)
     else:       
         question_form = QuestionForm(instance=question, prefix=f'question_{question.pk}')
         answer_forms = [AnswerForm(instance=answer, prefix=f'answer_{answer.pk}') for answer in question.answer_set.all()]
+        while len(answer_forms) < 4:
+            answer_forms.append(AnswerForm(prefix=f'answer_{len(answer_forms) + 1}'))
+
         forms_data.append((question_form, answer_forms))
 
     context = {'question_id': question_id, 'forms_data': forms_data}

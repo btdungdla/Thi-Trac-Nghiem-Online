@@ -6,31 +6,36 @@
 {% block search %}
 <div class="onecol">
     <h2>Danh mục: {{ category.category_name }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {% for question_form, answer_forms in forms_data %}
-    <div class="question-container">
-        <div class="question-label">
-            <strong>Câu hỏi {{ forloop.counter }}:</strong>
+    <form method="post">
+        {% csrf_token %}
+        {% for question_form, answer_forms in forms_data %}
+        <div class="question-container">
+            <div class="question-label">
+                <strong>Câu hỏi {{ forloop.counter }}:</strong>
+            </div>
+            <div class="question-text">
+                {{ question_form.question_text }}
+            </div>
+            <ol type="A">
+                {% for answer_form in answer_forms %}
+                <li class="answer-item">
+                    <label class="answer-label">
+                        <span class="answer-prefix">{{ forloop.counter|int_to_char }}</span>
+                        <input type="radio" name="{{ question_form.prefix }}-correct_answer"
+                            value="{{ answer_form.instance.id }}" {% if answer_form.instance.is_correct %} checked
+                            {%endif%}>
+
+                        <span class="answer-text">{{ answer_form.answer_text }}</span>
+                    </label>
+                </li>
+                {% endfor %}
+            </ol>
+            <a style="width: 200px;" class="btn"
+                href="{% url 'question_by_id' question_id=question_form.instance.id %}">Kiểm tra câu hỏi</a>
         </div>
-        <div class="question-text">
-            {{ question_form.question_text }}
-        </div>
-        <ol type="A">
-            {% for answer_form in answer_forms %}
-            <li class="answer-item">
-                <label class="answer-label">
-                    <span class="answer-prefix">{{ forloop.counter|int_to_char }}</span>
-                    <input type="radio" name="{{ question_form.prefix }}-correct_answer" value="{{ answer_form.instance.id }}" {% if answer_form.instance.is_correct %} checked {% endif %}>
-                    <span class="answer-text">{{ answer_form.answer_text }}</span>
-                </label>
-            </li>
-            {% endfor %}
-        </ol>
-    </div>
-    {% endfor %}
-    <button class="btn" type="submit">Cập nhật</button>
-</form>
+        {% endfor %}
+        <button class="btn" type="submit">Cập nhật</button>
+    </form>
 </div>
 
 {% endblock search %}
